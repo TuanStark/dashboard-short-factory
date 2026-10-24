@@ -31,7 +31,7 @@ export const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      setError('Please provide both email and password.');
+      setError('Vui lòng cung cấp đầy đủ email và mật khẩu.');
       return;
     }
 
@@ -42,7 +42,7 @@ export const LoginPage: React.FC = () => {
       await login({ email, password });
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please verify your credentials.');
+      setError(err.message || 'Xác thực thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.');
     } finally {
       setIsSubmitting(false);
     }
@@ -70,16 +70,16 @@ export const LoginPage: React.FC = () => {
             AI SHORTS FACTORY
           </h1>
           <p className="text-xs font-mono uppercase tracking-widest text-indigo-400 mt-1">
-            Control Plane • Secure Gateway
+            Cổng Điều Khiển • Xác Thực An Toàn
           </p>
         </div>
 
         {/* Login Card */}
         <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl p-7 shadow-2xl shadow-black/60">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-white">Operator Sign-In</h2>
+            <h2 className="text-lg font-semibold text-white">Đăng Nhập Hệ Thống</h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Authenticate to manage YouTube channels, render pipelines, and cron triggers.
+              Xác thực quyền quản trị để điều hành mạng lưới kênh, quy trình render và bộ hẹn giờ tự động.
             </p>
           </div>
 
@@ -88,10 +88,10 @@ export const LoginPage: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-indigo-400" />
-                Default Admin Account (.env)
+                Tài khoản Admin Mặc Định (.env)
               </span>
               <span className="text-[10px] text-indigo-400 flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> 1-Click Fill
+                <Sparkles className="w-3 h-3" /> Điền nhanh 1 chạm
               </span>
             </div>
             <button
@@ -105,7 +105,7 @@ export const LoginPage: React.FC = () => {
                   ADMIN
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400">Fill Credentials →</span>
+              <span className="text-[11px] text-slate-400">Điền thông tin →</span>
             </button>
           </div>
 
@@ -121,7 +121,7 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Email Address
+                Địa chỉ Email
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -138,7 +138,7 @@ export const LoginPage: React.FC = () => {
 
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Password
+                Mật khẩu
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -172,11 +172,11 @@ export const LoginPage: React.FC = () => {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Verifying Credentials...</span>
+                  <span>Đang xác thực thông tin...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In to Control Plane</span>
+                  <span>Đăng Nhập Vào Hệ Thống</span>
                 </>
               )}
             </button>
@@ -187,12 +187,12 @@ export const LoginPage: React.FC = () => {
         <div className="mt-6 flex items-center justify-center gap-6 text-[11px] font-mono text-slate-500">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-            JWT RS256 Auth
+            Chứng thực JWT
           </span>
           <span className="text-slate-800">•</span>
-          <span>AES-256 GCM</span>
+          <span>Mã hóa AES-256</span>
           <span className="text-slate-800">•</span>
-          <span>RBAC Enforced</span>
+          <span>Phân quyền RBAC</span>
         </div>
       </div>
     </div>

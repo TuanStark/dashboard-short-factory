@@ -66,12 +66,12 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
       return api.configureChannel(payload);
     },
     onSuccess: (res) => {
-      success(res.message || 'Channel configured successfully');
+      success(res.message || 'Cấu hình kênh thành công');
       queryClient.invalidateQueries({ queryKey: ['channels'] });
       onClose();
     },
     onError: (err: Error) => {
-      error(`Configuration failed: ${err.message}`);
+      error(`Cấu hình thất bại: ${err.message}`);
     },
   });
 
@@ -79,8 +79,8 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={channel ? `Edit Channel: ${channel.name}` : 'Configure New Channel'}
-      description="Connect a YouTube brand identity, genre DNA preset, and Google OAuth credentials."
+      title={channel ? `Chỉnh Sửa Kênh: ${channel.name}` : 'Cấu Hình Kênh Mới'}
+      description="Kết nối nhận diện thương hiệu YouTube, phong cách thể loại DNA và chứng chỉ Google OAuth."
       maxWidth="lg"
     >
       <form
@@ -93,13 +93,13 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1">
-              Channel Identifier (ID)
+              Mã Định Danh Kênh (ID)
             </label>
             <input
               type="text"
               required
               disabled={Boolean(channel)}
-              placeholder="e.g. channel_04_mystery"
+              placeholder="Ví dụ: channel_04_mystery"
               value={id}
               onChange={(e) => setId(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono disabled:opacity-50"
@@ -108,7 +108,7 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
 
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1">
-              Genre DNA Style
+              Phong Cách Thể Loại DNA
             </label>
             <select
               value={genreKey}
@@ -126,12 +126,12 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
 
         <div>
           <label className="block text-xs font-medium text-slate-300 mb-1">
-            Display Name
+            Tên Hiển Thị Kênh
           </label>
           <input
             type="text"
             required
-            placeholder="e.g. Midnight Paradox (Science Mystery)"
+            placeholder="Ví dụ: Midnight Paradox (Khoa Học Kỳ Bí)"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -140,11 +140,11 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
 
         <div>
           <label className="block text-xs font-medium text-slate-300 mb-1">
-            Description
+            Mô Tả Kênh
           </label>
           <textarea
             rows={2}
-            placeholder="Brief channel purpose & audience profile..."
+            placeholder="Mô tả ngắn gọn về định hướng kênh và đối tượng khán giả..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -154,26 +154,26 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1">
-              Default Video Privacy
+              Chế Độ Hiển Thị Mặc Định
             </label>
             <select
               value={defaultPrivacy}
               onChange={(e: any) => setDefaultPrivacy(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="unlisted">Unlisted (HITL Moderation)</option>
-              <option value="public">Public (Immediate Direct Release)</option>
-              <option value="private">Private</option>
+              <option value="unlisted">Không công khai (Cần kiểm duyệt)</option>
+              <option value="public">Công khai (Tự động đăng ngay)</option>
+              <option value="private">Riêng tư</option>
             </select>
           </div>
 
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1">
-              Default Tags (comma-separated)
+              Thẻ Mặc Định (phân tách bằng dấu phẩy)
             </label>
             <input
               type="text"
-              placeholder="history, shorts, paradox"
+              placeholder="lich-su, shorts, huyen-bi"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -185,31 +185,31 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
         <div className="pt-3 border-t border-slate-800">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-indigo-400">
-              Google OAuth2 Credentials (AES-256 Encrypted)
+              Chứng Chỉ Google OAuth2 (Mã hóa AES-256)
             </span>
             <span className="text-[10px] font-mono text-slate-500">
-              Optional for render-only
+              Tùy chọn cho chế độ chỉ render
             </span>
           </div>
 
           <div className="space-y-2">
             <input
               type="text"
-              placeholder="Google Client ID (e.g. 449942607582-xxxx.apps.googleusercontent.com)"
+              placeholder="Google Client ID (ví dụ: 449942607582-xxxx.apps.googleusercontent.com)"
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
               className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <input
               type="password"
-              placeholder="Google Client Secret (e.g. GOCSPX-xxxx)"
+              placeholder="Google Client Secret (ví dụ: GOCSPX-xxxx)"
               value={clientSecret}
               onChange={(e) => setClientSecret(e.target.value)}
               className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <input
               type="password"
-              placeholder="Google OAuth2 Refresh Token (e.g. 1//0gte8cYX6xxxx)"
+              placeholder="Google OAuth2 Refresh Token (ví dụ: 1//0gte8cYX6xxxx)"
               value={refreshToken}
               onChange={(e) => setRefreshToken(e.target.value)}
               className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -219,7 +219,7 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
 
         <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
           <Button type="button" variant="outline" size="sm" onClick={onClose}>
-            Cancel
+            Hủy
           </Button>
           <Button
             type="submit"
@@ -227,7 +227,7 @@ export const ConfigureChannelModal: React.FC<ConfigureChannelModalProps> = ({
             size="sm"
             isLoading={mutation.isPending}
           >
-            Save Channel
+            Lưu Kênh
           </Button>
         </div>
       </form>

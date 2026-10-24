@@ -16,6 +16,23 @@ import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
 import { useToast } from '../../../components/ui/Toast';
 
+const TOPIC_STATUS_MAP: Record<string, string> = {
+  IDEA: 'Ý TƯỞNG',
+  RESEARCH_READY: 'ĐÃ NGHIÊN CỨU',
+  PRODUCING: 'ĐANG TẠO',
+  READY_FOR_REVIEW: 'CHỜ DUYỆT',
+  PUBLISHED: 'ĐÃ XUẤT BẢN',
+  REJECTED: 'TỪ CHỐI',
+  DISCARDED: 'ĐÃ HỦY',
+};
+
+const FILTER_TABS = [
+  { key: 'ALL', label: 'TẤT CẢ' },
+  { key: 'READY', label: 'CHỜ DUYỆT' },
+  { key: 'PUBLISHED', label: 'ĐÃ XUẤT BẢN' },
+  { key: 'RESEARCH_READY', label: 'ĐÃ NGHIÊN CỨU' },
+];
+
 export const StudioPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
@@ -63,7 +80,7 @@ export const StudioPage: React.FC = () => {
   // HITL Approval Mutation
   const approvalMutation = useMutation({
     mutationFn: (action: 'APPROVE' | 'REGENERATE' | 'DISCARD') => {
-      if (!currentTopic) throw new Error('No topic selected');
+      if (!currentTopic) throw new Error('Chưa chọn chủ đề nào');
       return api.approveTopic({
         shortId: currentTopic.id,
         action,
@@ -72,17 +89,17 @@ export const StudioPage: React.FC = () => {
     },
     onSuccess: (_res, action) => {
       if (action === 'APPROVE') {
-        success('Short approved and published public to YouTube!');
+        success('Video Shorts đã được duyệt và xuất bản công khai lên YouTube!');
       } else if (action === 'REGENERATE') {
-        success('Short marked for regeneration (returned to IDEA pool).');
+        success('Đã yêu cầu làm lại kịch bản (chuyển về kho ý tưởng).');
       } else {
-        success('Short discarded and assets purged.');
+        success('Đã hủy bỏ Short và giải phóng toàn bộ tài nguyên.');
       }
       setFeedback('');
       queryClient.invalidateQueries({ queryKey: ['topics'] });
     },
     onError: (err: Error) => {
-      error(`Action failed: ${err.message}`);
+      error(`Thao tác thất bại: ${err.message}`);
     },
   });
 
@@ -92,10 +109,10 @@ export const StudioPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800 shrink-0">
         <div>
           <h2 className="text-2xl font-bold text-white tracking-tight">
-            HITL Review & Broadcast Studio
+            Studio Kiểm Duyệt & Xuất Bản (HITL)
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Audit AI generation adherence, inspect 9:16 vertical render, and publish to YouTube.
+            Kiểm tra độ tuân thủ phong cách AI, xem trước video dọc 9:16 và đăng lên YouTube.
           </p>
         </div>
       </div>
@@ -110,7 +127,7 @@ export const StudioPage: React.FC = () => {
               <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
               <input
                 type="text"
-                placeholder="Search topics by title..."
+                placeholder="Tìm kiếm chủ đề theo tiêu đề..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-slate-800/90 border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -118,17 +135,17 @@ export const StudioPage: React.FC = () => {
             </div>
 
             <div className="flex gap-1 overflow-x-auto text-[11px] pb-1">
-              {['ALL', 'READY', 'PUBLISHED', 'RESEARCH_READY'].map((st) => (
+              {FILTER_TABS.map((tab) => (
                 <button
-                  key={st}
-                  onClick={() => setFilterStatus(st)}
+                  key={tab.key}
+                  onClick={() => setFilterStatus(tab.key)}
                   className={`px-2.5 py-1 rounded-md font-mono transition-colors shrink-0 ${
-                    filterStatus === st
+                    filterStatus === tab.key
                       ? 'bg-indigo-600 text-white font-semibold'
                       : 'bg-slate-800/60 text-slate-400 hover:text-white'
                   }`}
                 >
-                  {st}
+                  {tab.label}
                 </button>
               ))}
             </div>
@@ -137,9 +154,9 @@ export const StudioPage: React.FC = () => {
           {/* List */}
           <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60">
             {isLoading ? (
-              <div className="p-6 text-center text-xs text-slate-500">Loading topic queue...</div>
+              <div className="p-6 text-center text-xs text-slate-500">Đang tải danh sách chủ đề...</div>
             ) : filteredTopics.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-500">No matching shorts found.</div>
+              <div className="p-6 text-center text-xs text-slate-500">Không tìm thấy video phù hợp.</div>
             ) : (
               filteredTopics.map((topic) => {
                 const isSelected = topic.id === currentTopic?.id;
@@ -177,7 +194,7 @@ export const StudioPage: React.FC = () => {
                             : 'default'
                         }
                       >
-                        {topic.status}
+                        {TOPIC_STATUS_MAP[topic.status] || topic.status}
                       </Badge>
                       <span className="text-slate-500 font-mono">
                         {topic.historical_period || 'Short'}
@@ -213,9 +230,9 @@ export const StudioPage: React.FC = () => {
                         <div className="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto text-indigo-400 mb-2">
                           <Film className="w-6 h-6" />
                         </div>
-                        <p className="text-xs font-mono text-slate-400">9:16 Video Rendering</p>
+                        <p className="text-xs font-mono text-slate-400">Đang Tạo Video Dọc 9:16</p>
                         <p className="text-[10px] text-slate-500 mt-1">
-                          Video stream is offloaded to Cloudinary CDN upon render trigger.
+                          Luồng video sẽ tự động chuyển tiếp lên Cloudinary CDN khi bắt đầu render.
                         </p>
                       </div>
                     )}
@@ -236,7 +253,7 @@ export const StudioPage: React.FC = () => {
                         </h3>
                         {currentTopic.historical_period && (
                           <p className="text-xs text-slate-400 mt-1 font-mono">
-                            Timeline: {currentTopic.historical_period}
+                            Dòng thời gian: {currentTopic.historical_period}
                           </p>
                         )}
                       </div>
@@ -244,13 +261,13 @@ export const StudioPage: React.FC = () => {
                       {/* QC Score Grid */}
                       <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800">
                         <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
-                          <span className="text-[10px] font-mono text-slate-400">VIRAL POTENTIAL</span>
+                          <span className="text-[10px] font-mono text-slate-400">TIỀM NĂNG VIRAL</span>
                           <p className="text-xl font-bold font-mono text-amber-400 mt-0.5">
                             {currentTopic.potential_score} / 10
                           </p>
                         </div>
                         <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
-                          <span className="text-[10px] font-mono text-slate-400">QC STYLE SCORE</span>
+                          <span className="text-[10px] font-mono text-slate-400">ĐỘ CHUẨN PHONG CÁCH</span>
                           <p className="text-xl font-bold font-mono text-emerald-400 mt-0.5">
                             98.2%
                           </p>
@@ -259,16 +276,16 @@ export const StudioPage: React.FC = () => {
 
                       <div className="p-3 rounded-lg bg-slate-900/40 border border-slate-800/80 text-xs space-y-1.5 font-mono text-[11px]">
                         <div className="flex justify-between">
-                          <span className="text-slate-400">Specs:</span>
-                          <span className="text-slate-200">1080x1920 (9:16 Vertical) @ 30 FPS</span>
+                          <span className="text-slate-400">Thông số:</span>
+                          <span className="text-slate-200">1080x1920 (Khung hình dọc 9:16) @ 30 FPS</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-400">Disk Retention:</span>
-                          <span className="text-emerald-400">Zero-Local Purge Executed</span>
+                          <span className="text-slate-400">Cơ chế lưu trữ:</span>
+                          <span className="text-emerald-400">Đã dọn sạch ổ cứng nội bộ</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-400">CDN Offload:</span>
-                          <span className="text-indigo-400">Cloudinary CDN Edge</span>
+                          <span className="text-slate-400">Phân phối CDN:</span>
+                          <span className="text-indigo-400">Máy chủ Cloudinary Edge</span>
                         </div>
                       </div>
 
@@ -276,7 +293,7 @@ export const StudioPage: React.FC = () => {
                       {currentTopic.status === 'PUBLISHED' && (
                         <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/60 flex items-center justify-between">
                           <span className="text-xs text-emerald-300 font-medium">
-                            Live on YouTube
+                            Đang Phát Trên YouTube
                           </span>
                           <a
                             href={
@@ -287,7 +304,7 @@ export const StudioPage: React.FC = () => {
                             rel="noreferrer"
                             className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 font-mono font-medium underline"
                           >
-                            <span>Open Shorts</span>
+                            <span>Mở YouTube Shorts</span>
                             <ExternalLink className="w-3.5 h-3.5" />
                           </a>
                         </div>
@@ -298,11 +315,11 @@ export const StudioPage: React.FC = () => {
                   {/* Feedback / Moderation Controls */}
                   <Card className="space-y-3">
                     <h4 className="text-xs font-semibold text-slate-300">
-                      Editorial Review & Feedback
+                      Đánh Giá & Góp Ý Biên Tập
                     </h4>
                     <textarea
                       rows={2}
-                      placeholder="Add directorial notes or rejection reasons..."
+                      placeholder="Thêm ghi chú đạo diễn hoặc lý do từ chối/cần sửa đổi..."
                       value={feedback}
                       onChange={(e) => setFeedback(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -344,7 +361,7 @@ export const StudioPage: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="p-12 text-center text-slate-500">No topic selected.</div>
+            <div className="p-12 text-center text-slate-500">Chưa chọn chủ đề nào.</div>
           )}
         </div>
       </div>

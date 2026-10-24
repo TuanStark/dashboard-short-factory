@@ -31,6 +31,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
     }
   };
 
+  const getRoleLabel = (role?: string) => {
+    switch (role) {
+      case 'ADMIN':
+        return 'QUẢN TRỊ VIÊN';
+      case 'OPERATOR':
+        return 'VẬN HÀNH VIÊN';
+      case 'VIEWER':
+      default:
+        return 'NGƯỜI XEM';
+    }
+  };
+
   return (
     <header className="h-16 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-3">
@@ -48,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
             />
           </span>
           <span className="text-xs font-mono font-medium text-slate-300">
-            {isLoading ? 'Checking...' : isHealthy ? 'SYSTEM OPERATIONAL' : 'DEGRADED'}
+            {isLoading ? 'Đang kiểm tra...' : isHealthy ? 'HỆ THỐNG HOẠT ĐỘNG' : 'SUY GIẢM HIỆU NĂNG'}
           </span>
         </div>
 
@@ -61,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
           </span>
           <span className="flex items-center gap-1.5">
             <Database className="w-3.5 h-3.5 text-cyan-400" />
-            <span>postgres:{health?.database || 'connected'}</span>
+            <span>postgres:{health?.database || 'đã kết nối'}</span>
           </span>
         </div>
       </div>
@@ -69,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
       <div className="flex items-center gap-3">
         <button
           onClick={() => refetch()}
-          title="Refresh health status"
+          title="Làm mới trạng thái hệ thống"
           className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
         >
           <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin text-indigo-400' : ''}`} />
@@ -81,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
           leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
           onClick={onOpenRenderModal}
         >
-          New Production
+          Tạo Video Mới
         </Button>
 
         {user && (
@@ -102,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
                         user.role,
                       )}`}
                     >
-                      {user.role}
+                      {getRoleLabel(user.role)}
                     </span>
                   </div>
                 </div>
@@ -110,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRenderModal }) => {
 
               <button
                 onClick={logout}
-                title="Sign out of Control Plane"
+                title="Đăng xuất khỏi hệ thống"
                 className="p-1.5 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 border border-transparent hover:border-rose-800/40 transition-all ml-1"
               >
                 <LogOut className="w-4 h-4" />

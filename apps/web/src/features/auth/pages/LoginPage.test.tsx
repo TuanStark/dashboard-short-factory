@@ -34,9 +34,9 @@ describe('LoginPage Component', () => {
     );
 
     expect(screen.getByText(/AI SHORTS FACTORY/i)).toBeInTheDocument();
-    expect(screen.getByText(/Operator Sign-In/i)).toBeInTheDocument();
+    expect(screen.getByText(/Đăng Nhập Hệ Thống/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/admin@shortfactory.ai/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Sign In to Control Plane/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Đăng Nhập Vào Hệ Thống/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /admin@shortfactory.ai/i })).toBeInTheDocument();
   });
 

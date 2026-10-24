@@ -22,10 +22,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         </div>
         <div className="flex flex-col items-center gap-1.5 text-center">
           <h2 className="text-base font-semibold tracking-tight text-white">
-            Authenticating Session
+            Đang Xác Thực Phiên Làm Việc
           </h2>
           <p className="text-xs font-mono text-slate-400">
-            Verifying cryptographic credentials & permissions...
+            Đang kiểm tra chứng chỉ bảo mật và quyền truy cập...
           </p>
         </div>
       </div>

@@ -42,13 +42,13 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
         },
       }),
     onSuccess: (res) => {
-      success('Video produced and rendered successfully!');
+      success('Video đã được khởi tạo và render thành công!');
       setLastResult(res.data);
       queryClient.invalidateQueries({ queryKey: ['topics'] });
       queryClient.invalidateQueries({ queryKey: ['channels'] });
     },
     onError: (err: Error) => {
-      error(`Production failed: ${err.message}`);
+      error(`Tạo video thất bại: ${err.message}`);
     },
   });
 
@@ -66,11 +66,11 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title={lastResult ? 'Production Completed' : 'Trigger Video Production'}
+      title={lastResult ? 'Quá Trình Sản Xuất Hoàn Tất' : 'Khởi Chạy Sản Xuất Video'}
       description={
         lastResult
-          ? 'Video has been composited and offloaded to Cloudinary CDN.'
-          : 'Configure script direction, voiceover, and visual generator pipeline.'
+          ? 'Video đã được ghép nối khung hình và tải lên Cloudinary CDN an toàn.'
+          : 'Thiết lập định hướng kịch bản, giọng đọc lồng tiếng và bộ tạo hình ảnh AI.'
       }
       maxWidth="lg"
     >
@@ -80,7 +80,7 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <h4 className="text-sm font-semibold text-emerald-300">
-                Render Job Complete (Zero-Local Purged)
+                Tiến Trình Render Hoàn Tất (Đã giải phóng ổ cứng nội bộ)
               </h4>
               <p className="text-xs text-slate-300 mt-1">{lastResult.title}</p>
             </div>
@@ -88,13 +88,13 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
 
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
-              <span className="text-slate-400">Duration</span>
+              <span className="text-slate-400">Thời lượng</span>
               <p className="font-mono text-sm font-semibold text-white mt-0.5">
-                {lastResult.durationSec}s
+                {lastResult.durationSec} giây
               </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
-              <span className="text-slate-400">Style Adherence QC</span>
+              <span className="text-slate-400">Độ chuẩn phong cách (QC)</span>
               <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">
                 {Math.round(lastResult.qcResult.styleAdherenceScore * 100)}%
               </p>
@@ -102,7 +102,7 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
           </div>
 
           <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/60">
-            <span className="text-[11px] font-mono text-slate-400">CLOUDINARY CDN STREAM</span>
+            <span className="text-[11px] font-mono text-slate-400">LUỒNG PHÁT CLOUDINARY CDN</span>
             <a
               href={lastResult.cloudinaryUrl}
               target="_blank"
@@ -115,10 +115,10 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
 
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
             <Button variant="secondary" size="sm" onClick={handleReset}>
-              Produce Another
+              Tạo Thêm Video
             </Button>
             <Button variant="primary" size="sm" onClick={handleClose}>
-              Done
+              Hoàn Tất
             </Button>
           </div>
         </div>
@@ -133,7 +133,7 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
         >
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Select YouTube Channel
+              Chọn Kênh YouTube
             </label>
             <select
               value={channelId}
@@ -150,12 +150,12 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
 
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Video Title / Hook Prompt
+              Tiêu Đề Video / Prompt Câu Mở Đầu (Hook)
             </label>
             <input
               type="text"
               required
-              placeholder="e.g. Bí quyết làm chủ cảm xúc của Marcus Aurelius"
+              placeholder="Ví dụ: Bí quyết làm chủ cảm xúc của Marcus Aurelius"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -165,22 +165,22 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Target Duration
+                Thời Lượng Mục Tiêu
               </label>
               <select
                 value={targetDurationSec}
                 onChange={(e) => setTargetDurationSec(Number(e.target.value))}
                 className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value={30}>30 seconds (High Retention)</option>
-                <option value={45}>45 seconds (Standard)</option>
-                <option value={60}>60 seconds (Deep Narrative)</option>
+                <option value={30}>30 giây (Tỷ lệ giữ chân cao)</option>
+                <option value={45}>45 giây (Chuẩn YouTube Shorts)</option>
+                <option value={60}>60 giây (Kể chuyện chi tiết)</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Publishing Policy
+                Chính Sách Đăng Tải
               </label>
               <label className="flex items-center gap-2 mt-2.5 cursor-pointer text-xs text-slate-300">
                 <input
@@ -189,14 +189,14 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
                   onChange={(e) => setPublishYouTube(e.target.checked)}
                   className="rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
                 />
-                <span>Auto-Publish to YouTube</span>
+                <span>Tự Động Đăng Lên YouTube Shorts</span>
               </label>
             </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
             <Button type="button" variant="outline" size="sm" onClick={handleClose}>
-              Cancel
+              Hủy
             </Button>
             <Button
               type="submit"
@@ -205,7 +205,7 @@ export const QuickRenderModal: React.FC<QuickRenderModalProps> = ({ isOpen, onCl
               isLoading={produceMutation.isPending}
               leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
             >
-              Start Render
+              Bắt Đầu Render
             </Button>
           </div>
         </form>

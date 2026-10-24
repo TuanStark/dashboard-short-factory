@@ -16,6 +16,16 @@ import { Button } from '../../../components/ui/Button';
 import { Link } from 'react-router-dom';
 import { QuickRenderModal } from '../components/QuickRenderModal';
 
+const TOPIC_STATUS_MAP: Record<string, string> = {
+  IDEA: 'Ý TƯỞNG',
+  RESEARCH_READY: 'ĐÃ NGHIÊN CỨU',
+  PRODUCING: 'ĐANG TẠO',
+  READY_FOR_REVIEW: 'CHỜ DUYỆT',
+  PUBLISHED: 'ĐÃ XUẤT BẢN',
+  REJECTED: 'TỪ CHỐI',
+  DISCARDED: 'ĐÃ HỦY',
+};
+
 export const DashboardPage: React.FC = () => {
   const [isRenderModalOpen, setIsRenderModalOpen] = useState(false);
 
@@ -47,15 +57,15 @@ export const DashboardPage: React.FC = () => {
       {/* Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-800">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Factory Control Deck</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Bảng Điều Khiển Nhà Máy</h2>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time pipeline analytics, quota monitoring, and autonomous generation matrix.
+            Phân tích quy trình theo thời gian thực, giám sát hạn ngạch và ma trận sản xuất tự động.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/studio">
             <Button variant="outline" size="sm" rightIcon={<ChevronRight className="w-4 h-4" />}>
-              Open Review Studio
+              Vào Studio Duyệt Video
             </Button>
           </Link>
           <Button
@@ -64,7 +74,7 @@ export const DashboardPage: React.FC = () => {
             leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
             onClick={() => setIsRenderModalOpen(true)}
           >
-            Produce Short
+            Tạo Video Ngay
           </Button>
         </div>
       </div>
@@ -73,7 +83,7 @@ export const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card hoverEffect>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">Configured Channels</span>
+            <span className="text-xs font-medium text-slate-400">Kênh Đã Cấu Hình</span>
             <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
               <Tv className="w-4 h-4" />
             </div>
@@ -84,14 +94,14 @@ export const DashboardPage: React.FC = () => {
             </p>
             <p className="text-[11px] text-emerald-400 flex items-center gap-1 mt-1 font-mono">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{channels.filter((c) => c.has_credentials).length} OAuth Linked</span>
+              <span>{channels.filter((c) => c.has_credentials).length} Kênh Đã Liên Kết OAuth</span>
             </p>
           </div>
         </Card>
 
         <Card hoverEffect>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">Total Video Topics</span>
+            <span className="text-xs font-medium text-slate-400">Tổng Số Chủ Đề Video</span>
             <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
               <Film className="w-4 h-4" />
             </div>
@@ -100,13 +110,13 @@ export const DashboardPage: React.FC = () => {
             <p className="text-2xl font-bold font-mono text-white">
               {loadingTopics ? '...' : topics.length}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Matrix AI Topic Queue</p>
+            <p className="text-[11px] text-slate-400 mt-1">Hàng Đợi Chủ Đề AI</p>
           </div>
         </Card>
 
         <Card hoverEffect>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">Published Public</span>
+            <span className="text-xs font-medium text-slate-400">Đã Xuất Bản YouTube</span>
             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
               <CheckCircle2 className="w-4 h-4" />
             </div>
@@ -115,13 +125,13 @@ export const DashboardPage: React.FC = () => {
             <p className="text-2xl font-bold font-mono text-emerald-400">
               {loadingTopics ? '...' : publishedCount}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Live on YouTube Shorts</p>
+            <p className="text-[11px] text-slate-400 mt-1">Đang Phát Trên YouTube Shorts</p>
           </div>
         </Card>
 
         <Card hoverEffect>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">Pending Review & Pipeline</span>
+            <span className="text-xs font-medium text-slate-400">Đang Chờ Duyệt & Render</span>
             <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
               <Clock className="w-4 h-4" />
             </div>
@@ -130,7 +140,7 @@ export const DashboardPage: React.FC = () => {
             <p className="text-2xl font-bold font-mono text-amber-400">
               {loadingTopics ? '...' : pendingReviewCount}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Awaiting approval or rendering</p>
+            <p className="text-[11px] text-slate-400 mt-1">Chờ phê duyệt hoặc đang tạo</p>
           </div>
         </Card>
       </div>
@@ -140,9 +150,9 @@ export const DashboardPage: React.FC = () => {
         {/* Recent Topic Pipeline Table */}
         <div className="lg:col-span-2 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-200">Recent Content Pipeline</h3>
+            <h3 className="text-sm font-semibold text-slate-200">Tiến Độ Nội Dung Gần Đây</h3>
             <Link to="/studio" className="text-xs text-indigo-400 hover:text-indigo-300">
-              View All Topics ({topics.length}) &rarr;
+              Xem tất cả chủ đề ({topics.length}) &rarr;
             </Link>
           </div>
 
@@ -151,18 +161,18 @@ export const DashboardPage: React.FC = () => {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-900/80 text-slate-400 uppercase font-mono text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
-                    <th className="py-3 px-4">Title / Hook</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Viral Score</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Action</th>
+                    <th className="py-3 px-4">Tiêu Đề / Câu Mở Đầu</th>
+                    <th className="py-3 px-4">Thể Loại</th>
+                    <th className="py-3 px-4">Điểm Viral</th>
+                    <th className="py-3 px-4">Trạng Thái</th>
+                    <th className="py-3 px-4 text-right">Thao Tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
                   {loadingTopics ? (
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-slate-500">
-                        Loading content pipeline...
+                        Đang tải tiến độ nội dung...
                       </td>
                     </tr>
                   ) : topics.slice(0, 7).map((topic) => (
@@ -188,7 +198,7 @@ export const DashboardPage: React.FC = () => {
                               : 'default'
                           }
                         >
-                          {topic.status}
+                          {TOPIC_STATUS_MAP[topic.status] || topic.status}
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -196,7 +206,7 @@ export const DashboardPage: React.FC = () => {
                           to={`/studio?topicId=${topic.id}`}
                           className="text-xs text-indigo-400 hover:text-indigo-300 underline font-medium"
                         >
-                          Inspect
+                          Kiểm tra
                         </Link>
                       </td>
                     </tr>
@@ -211,9 +221,9 @@ export const DashboardPage: React.FC = () => {
         <div className="space-y-4">
           <Card>
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-semibold text-white">Active Channels</h3>
+              <h3 className="text-sm font-semibold text-white">Kênh Đang Hoạt Động</h3>
               <Link to="/channels" className="text-xs text-indigo-400 hover:text-indigo-300">
-                Manage &rarr;
+                Quản lý &rarr;
               </Link>
             </div>
             <div className="mt-3 space-y-2.5">
@@ -229,7 +239,7 @@ export const DashboardPage: React.FC = () => {
                     </p>
                   </div>
                   <Badge variant={ch.has_credentials ? 'success' : 'warning'}>
-                    {ch.has_credentials ? 'OAuth OK' : 'No Auth'}
+                    {ch.has_credentials ? 'Đã xác thực' : 'Chưa xác thực'}
                   </Badge>
                 </div>
               ))}
@@ -238,24 +248,24 @@ export const DashboardPage: React.FC = () => {
 
           <Card>
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-semibold text-white">Auto-Scheduler</h3>
+              <h3 className="text-sm font-semibold text-white">Lịch Trình Tự Động</h3>
               <Link to="/schedule" className="text-xs text-indigo-400 hover:text-indigo-300">
-                Schedule &rarr;
+                Xem lịch &rarr;
               </Link>
             </div>
             <div className="mt-3 space-y-2 text-xs">
               <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
-                <span>CRON MATRIX</span>
+                <span>CHU KỲ CRON</span>
                 <span className="text-indigo-300">{scheduleData?.schedule.cronExpression}</span>
               </div>
               <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
-                <span>TIMEZONE</span>
+                <span>MÚI GIỜ</span>
                 <span className="text-slate-300">{scheduleData?.schedule.timezone}</span>
               </div>
               <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
-                <span>STATUS</span>
+                <span>TRẠNG THÁI</span>
                 <span className="text-emerald-400 font-semibold">
-                  {scheduleData?.schedule.enabled ? 'Active / Automated' : 'Paused'}
+                  {scheduleData?.schedule.enabled ? 'Tự Động Kích Hoạt' : 'Tạm Dừng'}
                 </span>
               </div>
             </div>

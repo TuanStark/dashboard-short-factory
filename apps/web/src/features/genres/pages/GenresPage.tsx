@@ -42,11 +42,11 @@ export const GenresPage: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: () => api.updateGenre(currentGenre.id, formState),
     onSuccess: () => {
-      success('Brand DNA profile updated successfully!');
+      success('Hồ sơ Brand DNA đã được cập nhật thành công!');
       queryClient.invalidateQueries({ queryKey: ['genres'] });
     },
     onError: (err: Error) => {
-      error(`Update failed: ${err.message}`);
+      error(`Cập nhật thất bại: ${err.message}`);
     },
   });
 
@@ -56,22 +56,22 @@ export const GenresPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
         <div>
           <h2 className="text-2xl font-bold text-white tracking-tight">
-            Brand DNA & Artistic Profiles
+            Brand DNA & Hồ Sơ Phong Cách Nghệ Thuật
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Director prompt directives, visual generation rules, and audio presets for each channel aesthetic.
+            Chỉ đạo prompt đạo diễn kịch bản, quy tắc tạo hình ảnh AI và preset âm thanh cho từng phong cách kênh.
           </p>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="py-12 text-center text-slate-500">Loading genre profiles...</div>
+        <div className="py-12 text-center text-slate-500">Đang tải hồ sơ thể loại...</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Genre Tabs (4 cols) */}
           <div className="lg:col-span-4 space-y-3">
             <h3 className="text-xs font-mono uppercase text-slate-500 tracking-wider">
-              Profile DNA Catalog
+              Danh Mục Hồ Sơ DNA
             </h3>
             <div className="space-y-2">
               {genres.map((g) => {
@@ -99,8 +99,8 @@ export const GenresPage: React.FC = () => {
                     </div>
                     <p className="text-xs text-slate-400 mt-2 line-clamp-2">{g.description}</p>
                     <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-500">
-                      <span>TTS: {g.tts_voice_id}</span>
-                      <span>Motion: {g.motion_engine_preset}</span>
+                      <span>Giọng đọc: {g.tts_voice_id}</span>
+                      <span>Chuyển động: {g.motion_engine_preset}</span>
                     </div>
                   </Card>
                 );
@@ -124,7 +124,7 @@ export const GenresPage: React.FC = () => {
                     leftIcon={<Save className="w-4 h-4" />}
                     onClick={() => updateMutation.mutate()}
                   >
-                    Save DNA Changes
+                    Lưu Thay Đổi DNA
                   </Button>
                 </div>
 
@@ -132,10 +132,10 @@ export const GenresPage: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-semibold text-indigo-300">
-                      AGY CLI Scriptwriter Director Prompt
+                      Chỉ Đạo Đạo Diễn Kịch Bản (AGY CLI / Gemini)
                     </label>
                     <span className="text-[10px] font-mono text-slate-500">
-                      System instruction for Gemini/AGY
+                      Chỉ thị hệ thống (System Instruction) cho Gemini / AGY
                     </span>
                   </div>
                   <textarea
@@ -155,7 +155,7 @@ export const GenresPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Visual Style Prompt (Positive)
+                      Prompt Phong Cách Hình Ảnh (Dương tính)
                     </label>
                     <textarea
                       rows={4}
@@ -172,7 +172,7 @@ export const GenresPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Visual Negative Prompt (Avoidances)
+                      Prompt Loại Trừ Hình Ảnh (Phủ định)
                     </label>
                     <textarea
                       rows={4}
@@ -192,7 +192,7 @@ export const GenresPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-800">
                   <div>
                     <label className="block text-xs font-medium text-slate-400 mb-1">
-                      TTS Voice Identifier
+                      Mã Giọng Đọc TTS
                     </label>
                     <input
                       type="text"
@@ -209,7 +209,7 @@ export const GenresPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-medium text-slate-400 mb-1">
-                      Soundscape Preset
+                      Preset Âm Nhạc / Không Gian
                     </label>
                     <input
                       type="text"
@@ -226,7 +226,7 @@ export const GenresPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-medium text-slate-400 mb-1">
-                      Motion Preset
+                      Preset Động Cơ Chuyển Động
                     </label>
                     <input
                       type="text"

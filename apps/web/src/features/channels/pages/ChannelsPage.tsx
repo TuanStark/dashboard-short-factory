@@ -29,14 +29,20 @@ export const ChannelsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const PRIVACY_LABEL_MAP: Record<string, string> = {
+    unlisted: 'KHÔNG CÔNG KHAI',
+    public: 'CÔNG KHAI',
+    private: 'RIÊNG TƯ',
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Channel Network</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Mạng Lưới Kênh YouTube</h2>
           <p className="text-xs text-slate-400 mt-1">
-            Manage your autonomous multi-tenant YouTube channels and Google OAuth credentials.
+            Quản lý các kênh YouTube tự động đa người dùng và chứng chỉ Google OAuth.
           </p>
         </div>
         <Button
@@ -45,13 +51,13 @@ export const ChannelsPage: React.FC = () => {
           leftIcon={<Plus className="w-4 h-4" />}
           onClick={handleNew}
         >
-          Add Channel
+          Thêm Kênh Mới
         </Button>
       </div>
 
       {/* Channel Cards Grid */}
       {isLoading ? (
-        <div className="py-12 text-center text-slate-500">Loading configured channels...</div>
+        <div className="py-12 text-center text-slate-500">Đang tải danh sách kênh...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {channels.map((channel) => (
@@ -71,12 +77,12 @@ export const ChannelsPage: React.FC = () => {
                     {channel.has_credentials ? (
                       <span className="flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        OAuth OK
+                        Đã xác thực
                       </span>
                     ) : (
                       <span className="flex items-center gap-1">
                         <ShieldAlert className="w-3 h-3" />
-                        No Auth
+                        Chưa xác thực
                       </span>
                     )}
                   </Badge>
@@ -84,16 +90,16 @@ export const ChannelsPage: React.FC = () => {
 
                 <div className="mt-4 pt-3 border-t border-slate-800/80 space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-400">Genre DNA:</span>
+                    <span className="text-slate-400">Thể loại DNA:</span>
                     <span className="font-mono text-indigo-300 font-medium">
                       {channel.genre_name || channel.genre_key}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-400">Default Privacy:</span>
-                    <span className="font-mono uppercase text-slate-300">
-                      {channel.default_privacy}
+                    <span className="text-slate-400">Chế độ hiển thị:</span>
+                    <span className="font-mono uppercase text-slate-300 font-medium">
+                      {PRIVACY_LABEL_MAP[channel.default_privacy] || channel.default_privacy}
                     </span>
                   </div>
 
@@ -120,11 +126,11 @@ export const ChannelsPage: React.FC = () => {
               </div>
 
               <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {channel.is_active ? 'ACTIVE' : 'INACTIVE'}
+                <span className="text-[11px] text-slate-500 font-mono font-semibold">
+                  {channel.is_active ? 'HOẠT ĐỘNG' : 'TẠM DỪNG'}
                 </span>
                 <Button variant="outline" size="sm" onClick={() => handleEdit(channel)}>
-                  Configure
+                  Cấu hình
                 </Button>
               </div>
             </Card>
