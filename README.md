@@ -170,3 +170,30 @@ pnpm build
 | `POST` | `/api/approval/callback` | HITL moderation callback (`APPROVE`, `REGENERATE`, `DISCARD`) |
 | `GET` | `/api/schedule` | Cron schedule configuration & status |
 | `POST` | `/api/v2/schedule/trigger` | Trigger rotational cron job immediately |
+
+---
+
+## 🐳 Docker & CI/CD Deployment
+
+### 1. GitHub Secrets Setup
+To enable automatic Docker Hub deployment in GitHub Actions, configure two repository secrets in **Settings > Secrets and variables > Actions**:
+- `DOCKERHUB_USERNAME`: Your Docker Hub account or organization name.
+- `DOCKERHUB_TOKEN`: Personal Access Token (PAT) created from **Docker Hub > Account Settings > Security**.
+
+### 2. Automated Pipeline Workflow
+- **Pull Requests**: Runs full quality gate (`validate` job: linting, TypeScript check, unit/e2e tests, production bundles).
+- **Push to `main`/`master` or Git Tag (`v*`)**: Automatically validates full stack, then builds and pushes multi-stage Docker images to Docker Hub in parallel:
+  - `${DOCKERHUB_USERNAME}/short-factory-api:latest` (and `sha-<hash>`, branch/tag)
+  - `${DOCKERHUB_USERNAME}/short-factory-web:latest` (and `sha-<hash>`, branch/tag)
+- **Manual Trigger**: Can also be executed anytime via `workflow_dispatch` in the Actions tab.
+
+### 3. Production Deployment with Docker Compose
+To deploy the pre-built images on any VPS or server:
+```bash
+# 1. Provide your environment variables (.env)
+cp .env.example .env
+
+# 2. Run the production stack
+docker compose -f docker-compose.prod.yml up -d
+```
+

@@ -14,7 +14,11 @@
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter \"@short-factory/api\" prisma:migrate",
-    "db:seed": "pnpm --filter \"@short-factory/api\" prisma:seed"
+    "db:seed": "pnpm --filter \"@short-factory/api\" prisma:seed",
+    "docker:build:api": "docker build -f apps/api/Dockerfile -t short-factory-api:latest .",
+    "docker:build:web": "docker build -f apps/web/Dockerfile -t short-factory-web:latest .",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down"
   },
   "devDependencies": {
     "prettier": "^3.5.1",
