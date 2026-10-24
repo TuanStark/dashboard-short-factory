@@ -1,0 +1,146 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PrivacyStatus {
+  private
+  unlisted
+  public
+}
+
+enum TopicStatus {
+  IDEA
+  RESEARCH_READY
+  PRODUCING
+  READY_FOR_REVIEW
+  PUBLISHED
+  REJECTED
+  DISCARDED
+}
+
+enum QcStatus {
+  PASS
+  WARNING
+  FAIL
+}
+
+model Channel {
+  id              String            @id
+  name            String
+  genreKey        String            @map("genre_key")
+  description     String?
+  defaultPrivacy  PrivacyStatus     @default(unlisted) @map("default_privacy")
+  defaultTags     String[]          @default([]) @map("default_tags")
+  isActive        Boolean           @default(true) @map("is_active")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  genre           GenreProfile      @relation(fields: [genreKey], references: [id])
+  credentials     GoogleCredential?
+  topics          TopicVideo[]
+  scheduledLast   ScheduleConfig[]
+
+  @@map("channels")
+}
+
+model GoogleCredential {
+  id                    String    @id @default(uuid())
+  channelId             String    @unique @map("channel_id")
+  clientId              String    @map("client_id")
+  clientSecretEncrypted String    @map("client_secret_encrypted")
+  refreshTokenEncrypted String    @map("refresh_token_encrypted")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  channel               Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@map("google_credentials")
+}
+
+model GenreProfile {
+  id                       String    @id
+  name                     String
+  description              String
+  systemPromptScriptwriter String    @map("system_prompt_scriptwriter") @db.Text
+  visualStylePrompt        String    @map("visual_style_prompt") @db.Text
+  visualNegativePrompt     String    @map("visual_negative_prompt") @db.Text
+  ttsProvider              String    @default("msedge") @map("tts_provider")
+  ttsVoiceId               String    @map("tts_voice_id")
+  soundscapePreset         String    @map("soundscape_preset")
+  motionEnginePreset       String    @map("motion_engine_preset")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
+
+  channels                 Channel[]
+
+  @@map("genre_profiles")
+}
+
+model TopicVideo {
+  id                   String          @id @default(uuid())
+  channelId            String          @map("channel_id")
+  title                String
+  category             String
+  historicalPeriod     String?         @map("historical_period")
+  potentialScore       Float           @default(80) @map("potential_score")
+  status               TopicStatus     @default(IDEA)
+  feedback             String?         @db.Text
+  cloudinaryUrl        String?         @map("cloudinary_url")
+  cloudinaryPublicId   String?         @map("cloudinary_public_id")
+  youtubeVideoId       String?         @map("youtube_video_id")
+  youtubeUrl           String?         @map("youtube_url")
+  durationSec          Float?          @map("duration_sec")
+  fileSizeBytes        BigInt?         @map("file_size_bytes")
+  qcStatus             QcStatus?       @map("qc_status")
+  styleAdherenceScore  Float?          @map("style_adherence_score")
+  qcDetails            Json?           @map("qc_details")
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
+
+  channel              Channel         @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  productionRuns       ProductionRun[]
+
+  @@index([channelId])
+  @@index([status])
+  @@map("topic_videos")
+}
+
+model ProductionRun {
+  id               String       @id @default(uuid())
+  topicId          String       @map("topic_id")
+  renderJobId      String       @map("render_job_id")
+  durationSec      Float        @map("duration_sec")
+  fileSizeBytes    BigInt       @map("file_size_bytes")
+  purgedLocalDisk  Boolean      @default(true) @map("purged_local_disk")
+  overallStatus    QcStatus     @map("overall_status")
+  rawLog           String?      @db.Text
+  executedAt       DateTime     @default(now()) @map("executed_at")
+
+  topic            TopicVideo   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId])
+  @@map("production_runs")
+}
+
+model ScheduleConfig {
+  id                    String    @id @default("default")
+  enabled               Boolean   @default(true)
+  cronExpression        String    @default("0 10,18 * * *") @map("cron_expression")
+  timezone              String    @default("Asia/Ho_Chi_Minh")
+  nextRun               DateTime? @map("next_run")
+  lastExecutedChannelId String?   @map("last_executed_channel_id")
+  slotsJson             Json?     @map("slots_json")
+  isCurrentlyRunning    Boolean   @default(false) @map("is_currently_running")
+  lastRunAt             DateTime? @map("last_run_at")
+  lastRunResult         String?   @map("last_run_result")
+  channelTurnIndex      Int       @default(0) @map("channel_turn_index")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  lastExecutedChannel   Channel?  @relation(fields: [lastExecutedChannelId], references: [id], onDelete: SetNull)
+
+  @@map("schedule_configs")
+}

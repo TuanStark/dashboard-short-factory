@@ -1,0 +1,23 @@
+{
+  "name": "dashboard-short-factory-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade modular monolith control plane and dashboard for AI Shorts Factory",
+  "packageManager": "pnpm@12.14.0",
+  "scripts": {
+    "build": "pnpm --filter \"@short-factory/contracts\" build && pnpm --filter \"./apps/*\" build",
+    "dev:web": "pnpm --filter \"@short-factory/web\" dev",
+    "dev:api": "pnpm --filter \"@short-factory/api\" start:dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter \"@short-factory/api\" prisma:migrate",
+    "db:seed": "pnpm --filter \"@short-factory/api\" prisma:seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.1",
+    "typescript": "^5.8.2"
+  }
+}

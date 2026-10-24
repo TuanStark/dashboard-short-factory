@@ -1,0 +1,97 @@
+name: CI Quality Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    name: Build, Lint & Test Full Stack
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: short_factory
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.14.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Contracts
+        run: pnpm --filter "@short-factory/contracts" build
+
+      - name: Generate Prisma Client
+        run: pnpm --filter "@short-factory/api" prisma generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/short_factory?schema=public
+
+      - name: Push Database Schema
+        run: pnpm --filter "@short-factory/api" prisma db push
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/short_factory?schema=public
+
+      - name: Seed Database
+        run: pnpm --filter "@short-factory/api" ts-node src/infrastructure/database/prisma/seed.ts
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/short_factory?schema=public
+
+      - name: Type Check Monorepo
+        run: |
+          pnpm --filter "@short-factory/contracts" typecheck
+          pnpm --filter "@short-factory/api" typecheck
+          pnpm --filter "@short-factory/web" typecheck
+
+      - name: Run Backend Unit & E2E Tests
+        run: |
+          pnpm --filter "@short-factory/api" test
+          pnpm --filter "@short-factory/api" test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/short_factory?schema=public
+          ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+      - name: Run Frontend Tests
+        run: pnpm --filter "@short-factory/web" test
+
+      - name: Build Production Bundles
+        run: |
+          pnpm --filter "@short-factory/api" build
+          pnpm --filter "@short-factory/web" build
