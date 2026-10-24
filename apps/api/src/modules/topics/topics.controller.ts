@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 import { TopicsService } from './topics.service';
 import { ApprovalCallbackDto } from './dto/approval.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Topics & HITL Approval')
+@ApiBearerAuth('JWT-auth')
 @Controller()
 export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
@@ -21,6 +24,7 @@ export class TopicsController {
     return this.topicsService.findOne(id);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.OPERATOR)
   @Post(['api/approval/callback', 'api/v2/approval/callback'])
   @ApiOperation({ summary: 'Human-in-the-Loop review callback (APPROVE, REGENERATE, DISCARD)' })
   @ApiResponse({ status: 200, description: 'Approval processed' })

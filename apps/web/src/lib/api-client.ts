@@ -13,24 +13,50 @@ import {
   TriggerScheduleRequest,
   HealthCheckResponse,
   GenreProfile,
+  LoginRequest,
+  AuthResponse,
+  User,
 } from '@short-factory/contracts';
 
 class ApiClient {
   private baseUrl: string;
+  private token: string | null = null;
 
   constructor() {
     // In browser, use empty string so requests hit the Vite proxy (/api, /health)
     // or explicit VITE_API_BASE_URL if configured
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    if (typeof window !== 'undefined') {
+      this.token = localStorage.getItem('short_factory_token');
+    }
+  }
+
+  setToken(token: string | null) {
+    this.token = token;
+    if (typeof window !== 'undefined') {
+      if (token) {
+        localStorage.setItem('short_factory_token', token);
+      } else {
+        localStorage.removeItem('short_factory_token');
+      }
+    }
+  }
+
+  getToken(): string | null {
+    return this.token;
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
+
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
 
     try {
       const response = await fetch(url, {
@@ -39,6 +65,13 @@ class ApiClient {
       });
 
       if (!response.ok) {
+        if (response.status === 401 && !endpoint.includes('/auth/login')) {
+          this.setToken(null);
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+          }
+        }
+
         let errorMsg = `HTTP Error ${response.status}: ${response.statusText}`;
         try {
           const errorData = await response.json();
@@ -54,6 +87,22 @@ class ApiClient {
       console.error(`[API Error] ${endpoint}:`, err);
       throw err;
     }
+  }
+
+  // Authentication & Identity
+  async login(data: LoginRequest): Promise<AuthResponse> {
+    const response = await this.request<AuthResponse>('/api/v2/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    if (response?.accessToken) {
+      this.setToken(response.accessToken);
+    }
+    return response;
+  }
+
+  async getMe(): Promise<User> {
+    return this.request<User>('/api/v2/auth/me');
   }
 
   // Health

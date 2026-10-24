@@ -5,11 +5,21 @@ import { ChannelsPage } from '../features/channels/pages/ChannelsPage';
 import { StudioPage } from '../features/studio/pages/StudioPage';
 import { GenresPage } from '../features/genres/pages/GenresPage';
 import { SchedulePage } from '../features/schedule/pages/SchedulePage';
+import { LoginPage } from '../features/auth/pages/LoginPage';
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
     path: '/',
-    element: <Shell />,
+    element: (
+      <ProtectedRoute>
+        <Shell />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -38,3 +48,4 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation';
+import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { ChannelsModule } from './modules/channels/channels.module';
 import { GenresModule } from './modules/genres/genres.module';
@@ -15,6 +16,7 @@ import { ScheduleModule } from './modules/schedule/schedule.module';
       validate,
       envFilePath: ['.env', '../../.env'],
     }),
+    AuthModule,
     HealthModule,
     ChannelsModule,
     GenresModule,

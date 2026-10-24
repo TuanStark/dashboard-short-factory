@@ -14,7 +14,23 @@ export class EnvironmentVariables {
 
   @IsNumber()
   @IsOptional()
-  PORT: number = 4000;
+  PORT: number = 4001;
+
+  @IsString()
+  @IsOptional()
+  JWT_SECRET: string = 'super_secret_jwt_key_change_in_production_32chars_min';
+
+  @IsString()
+  @IsOptional()
+  ADMIN_EMAIL: string = 'admin@shortfactory.ai';
+
+  @IsString()
+  @IsOptional()
+  ADMIN_PASSWORD: string = 'Admin@123456';
+
+  @IsString()
+  @IsOptional()
+  ADMIN_NAME: string = 'System Administrator';
 
   @IsString()
   @IsOptional()

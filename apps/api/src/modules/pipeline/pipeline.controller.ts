@@ -1,10 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 import { PipelineService } from './pipeline.service';
 import { ProduceRequestDto } from './dto/produce.dto';
 import { BatchProduceRequestDto } from './dto/batch-produce.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Production Pipeline')
+@ApiBearerAuth('JWT-auth')
+@Roles(UserRole.ADMIN, UserRole.OPERATOR)
 @Controller('api/v2/pipeline')
 export class PipelineController {
   constructor(private readonly pipelineService: PipelineService) {}

@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 import { ChannelsService } from './channels.service';
 import { ConfigureChannelDto } from './dto/configure-channel.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Channels')
+@ApiBearerAuth('JWT-auth')
 @Controller('api/v2/channels')
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}
@@ -21,6 +24,7 @@ export class ChannelsController {
     return this.channelsService.findOne(id);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.OPERATOR)
   @Post('configure')
   @ApiOperation({ summary: 'Configure or update channel and Google OAuth credentials' })
   @ApiResponse({ status: 200, description: 'Channel configured successfully' })

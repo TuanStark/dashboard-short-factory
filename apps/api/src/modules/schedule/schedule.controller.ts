@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 import { ScheduleService } from './schedule.service';
 import { TriggerScheduleDto } from './dto/trigger-schedule.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Auto-Scheduler')
+@ApiBearerAuth('JWT-auth')
 @Controller()
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
@@ -15,6 +18,7 @@ export class ScheduleController {
     return this.scheduleService.getSchedule();
   }
 
+  @Roles(UserRole.ADMIN, UserRole.OPERATOR)
   @Post(['api/v2/schedule/trigger', 'api/schedule/trigger'])
   @ApiOperation({ summary: 'Trigger next channel or specified channel in production rotation' })
   @ApiResponse({ status: 200, description: 'Scheduled production run triggered' })

@@ -272,3 +272,35 @@ export const HealthCheckResponseSchema = z.object({
   }),
 });
 export type HealthCheckResponse = z.infer<typeof HealthCheckResponseSchema>;
+
+// ==========================================
+// 7. AUTHENTICATION & IDENTITY
+// ==========================================
+
+export const UserRoleSchema = z.enum(['ADMIN', 'OPERATOR', 'VIEWER']);
+export type UserRole = z.infer<typeof UserRoleSchema>;
+
+export const UserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+  role: UserRoleSchema,
+  isActive: z.boolean().default(true),
+  lastLoginAt: z.string().nullable().optional(),
+  createdAt: z.string().optional(),
+});
+export type User = z.infer<typeof UserSchema>;
+
+export const LoginRequestSchema = z.object({
+  email: z.string().email('Invalid email address format'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+export type LoginRequest = z.infer<typeof LoginRequestSchema>;
+
+export const AuthResponseSchema = z.object({
+  success: z.boolean(),
+  accessToken: z.string(),
+  user: UserSchema,
+});
+export type AuthResponse = z.infer<typeof AuthResponseSchema>;
+
